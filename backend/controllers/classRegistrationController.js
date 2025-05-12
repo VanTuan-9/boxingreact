@@ -103,4 +103,26 @@ exports.rejectRegistration = async (req, res) => {
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
+};
+
+// Admin xóa đăng ký
+exports.deleteRegistration = async (req, res) => {
+  try {
+    const reg = await ClassRegistration.findByIdAndDelete(req.params.id);
+    if (!reg) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Registration not found' 
+      });
+    }
+    res.status(200).json({ 
+      success: true, 
+      message: 'Registration deleted successfully' 
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      success: false, 
+      message: error.message 
+    });
+  }
 }; 
