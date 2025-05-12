@@ -1,0 +1,98 @@
+{
+  "info": {
+    "_postman_id": "boxing-club-collection-001",
+    "name": "Boxing Club API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        { "name": "Đăng nhập người dùng", "request": { "method": "POST", "header": [], "url": { "raw": "/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api", "auth", "login"] }, "body": { "mode": "raw", "raw": "{\n  \"email\": \"\",\n  \"password\": \"\"\n}" } } },
+        { "name": "Đăng ký người dùng", "request": { "method": "POST", "header": [], "url": { "raw": "/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api", "auth", "register"] }, "body": { "mode": "raw", "raw": "{\n  \"name\": \"\",\n  \"email\": \"\",\n  \"password\": \"\"\n}" } } },
+        { "name": "Lấy thông tin user hiện tại", "request": { "method": "GET", "header": [], "url": { "raw": "/api/auth/me", "host": ["{{baseUrl}}"], "path": ["api", "auth", "me"] } } },
+        { "name": "Cập nhật thông tin user", "request": { "method": "PUT", "header": [], "url": { "raw": "/api/auth/me", "host": ["{{baseUrl}}"], "path": ["api", "auth", "me"] }, "body": { "mode": "raw", "raw": "{\n  \"name\": \"\",\n  \"email\": \"\",\n  \"password\": \"\"\n}" } } }
+      ]
+    },
+    {
+      "name": "Admin Auth",
+      "item": [
+        { "name": "Đăng nhập admin", "request": { "method": "POST", "header": [], "url": { "raw": "/api/admin-auth/login", "host": ["{{baseUrl}}"], "path": ["api", "admin-auth", "login"] }, "body": { "mode": "raw", "raw": "{\n  \"email\": \"\",\n  \"password\": \"\"\n}" } } },
+        { "name": "Lấy thông tin admin hiện tại", "request": { "method": "GET", "header": [], "url": { "raw": "/api/admin-auth/me", "host": ["{{baseUrl}}"], "path": ["api", "admin-auth", "me"] } } },
+        { "name": "Cập nhật thông tin admin", "request": { "method": "PUT", "header": [], "url": { "raw": "/api/admin-auth/me", "host": ["{{baseUrl}}"], "path": ["api", "admin-auth", "me"] }, "body": { "mode": "raw", "raw": "{\n  \"name\": \"\",\n  \"email\": \"\",\n  \"password\": \"\"\n}" } } }
+      ]
+    },
+    {
+      "name": "Users (Admin)",
+      "item": [
+        { "name": "Lấy danh sách user", "request": { "method": "GET", "header": [], "url": { "raw": "/api/admin/users", "host": ["{{baseUrl}}"], "path": ["api", "admin", "users"] } } },
+        { "name": "Thêm user mới", "request": { "method": "POST", "header": [], "url": { "raw": "/api/admin/users", "host": ["{{baseUrl}}"], "path": ["api", "admin", "users"] }, "body": { "mode": "raw", "raw": "{\n  \"name\": \"\",\n  \"email\": \"\",\n  \"password\": \"\"\n}" } } },
+        { "name": "Sửa user", "request": { "method": "PUT", "header": [], "url": { "raw": "/api/admin/users/:id", "host": ["{{baseUrl}}"], "path": ["api", "admin", "users", ":id"] }, "body": { "mode": "raw", "raw": "{\n  \"name\": \"\",\n  \"email\": \"\",\n  \"password\": \"\"\n}" } } },
+        { "name": "Xóa user", "request": { "method": "DELETE", "header": [], "url": { "raw": "/api/admin/users/:id", "host": ["{{baseUrl}}"], "path": ["api", "admin", "users", ":id"] } } }
+      ]
+    },
+    {
+      "name": "Classes",
+      "item": [
+        { "name": "Lấy danh sách lớp", "request": { "method": "GET", "header": [], "url": { "raw": "/api/classes", "host": ["{{baseUrl}}"], "path": ["api", "classes"] } } },
+        { "name": "Thêm lớp mới", "request": { "method": "POST", "header": [], "url": { "raw": "/api/classes", "host": ["{{baseUrl}}"], "path": ["api", "classes"] }, "body": { "mode": "raw", "raw": "{\n  \"name\": \"\",\n  \"description\": \"\"\n}" } } },
+        { "name": "Sửa lớp", "request": { "method": "PUT", "header": [], "url": { "raw": "/api/classes/:id", "host": ["{{baseUrl}}"], "path": ["api", "classes", ":id"] }, "body": { "mode": "raw", "raw": "{\n  \"name\": \"\",\n  \"description\": \"\"\n}" } } },
+        { "name": "Xóa lớp", "request": { "method": "DELETE", "header": [], "url": { "raw": "/api/classes/:id", "host": ["{{baseUrl}}"], "path": ["api", "classes", ":id"] } } }
+      ]
+    },
+    {
+      "name": "Đăng ký lớp học",
+      "item": [
+        { "name": "Lấy danh sách đăng ký lớp", "request": { "method": "GET", "header": [], "url": { "raw": "/api/class-registrations", "host": ["{{baseUrl}}"], "path": ["api", "class-registrations"] } } },
+        { "name": "Đăng ký lớp học", "request": { "method": "POST", "header": [], "url": { "raw": "/api/class-registrations", "host": ["{{baseUrl}}"], "path": ["api", "class-registrations"] }, "body": { "mode": "raw", "raw": "{\n  \"classId\": \"\"\n}" } } },
+        { "name": "Hủy đăng ký lớp", "request": { "method": "DELETE", "header": [], "url": { "raw": "/api/class-registrations/:id", "host": ["{{baseUrl}}"], "path": ["api", "class-registrations", ":id"] } } }
+      ]
+    },
+    {
+      "name": "Coaches",
+      "item": [
+        { "name": "Lấy danh sách HLV", "request": { "method": "GET", "header": [], "url": { "raw": "/api/coaches", "host": ["{{baseUrl}}"], "path": ["api", "coaches"] } } },
+        { "name": "Thêm HLV", "request": { "method": "POST", "header": [], "url": { "raw": "/api/coaches", "host": ["{{baseUrl}}"], "path": ["api", "coaches"] }, "body": { "mode": "raw", "raw": "{\n  \"name\": \"\",\n  \"bio\": \"\"\n}" } } },
+        { "name": "Sửa HLV", "request": { "method": "PUT", "header": [], "url": { "raw": "/api/coaches/:id", "host": ["{{baseUrl}}"], "path": ["api", "coaches", ":id"] }, "body": { "mode": "raw", "raw": "{\n  \"name\": \"\",\n  \"bio\": \"\"\n}" } } },
+        { "name": "Xóa HLV", "request": { "method": "DELETE", "header": [], "url": { "raw": "/api/coaches/:id", "host": ["{{baseUrl}}"], "path": ["api", "coaches", ":id"] } } }
+      ]
+    },
+    {
+      "name": "Tournaments",
+      "item": [
+        { "name": "Lấy danh sách giải đấu", "request": { "method": "GET", "header": [], "url": { "raw": "/api/tournaments", "host": ["{{baseUrl}}"], "path": ["api", "tournaments"] } } },
+        { "name": "Thêm giải đấu", "request": { "method": "POST", "header": [], "url": { "raw": "/api/tournaments", "host": ["{{baseUrl}}"], "path": ["api", "tournaments"] }, "body": { "mode": "raw", "raw": "{\n  \"name\": \"\",\n  \"description\": \"\"\n}" } } },
+        { "name": "Sửa giải đấu", "request": { "method": "PUT", "header": [], "url": { "raw": "/api/tournaments/:id", "host": ["{{baseUrl}}"], "path": ["api", "tournaments", ":id"] }, "body": { "mode": "raw", "raw": "{\n  \"name\": \"\",\n  \"description\": \"\"\n}" } } },
+        { "name": "Xóa giải đấu", "request": { "method": "DELETE", "header": [], "url": { "raw": "/api/tournaments/:id", "host": ["{{baseUrl}}"], "path": ["api", "tournaments", ":id"] } } }
+      ]
+    },
+    {
+      "name": "Đăng ký giải đấu",
+      "item": [
+        { "name": "Lấy danh sách đăng ký giải đấu", "request": { "method": "GET", "header": [], "url": { "raw": "/api/tournament-registrations", "host": ["{{baseUrl}}"], "path": ["api", "tournament-registrations"] } } },
+        { "name": "Đăng ký giải đấu", "request": { "method": "POST", "header": [], "url": { "raw": "/api/tournament-registrations", "host": ["{{baseUrl}}"], "path": ["api", "tournament-registrations"] }, "body": { "mode": "raw", "raw": "{\n  \"tournamentId\": \"\"\n}" } } },
+        { "name": "Hủy đăng ký giải đấu", "request": { "method": "DELETE", "header": [], "url": { "raw": "/api/tournament-registrations/:id", "host": ["{{baseUrl}}"], "path": ["api", "tournament-registrations", ":id"] } } }
+      ]
+    },
+    {
+      "name": "Notifications (Admin)",
+      "item": [
+        { "name": "Lấy danh sách thông báo", "request": { "method": "GET", "header": [], "url": { "raw": "/api/admin/notifications", "host": ["{{baseUrl}}"], "path": ["api", "admin", "notifications"] } } },
+        { "name": "Xóa tất cả thông báo", "request": { "method": "POST", "header": [], "url": { "raw": "/api/admin/notifications/clear", "host": ["{{baseUrl}}"], "path": ["api", "admin", "notifications", "clear"] } } }
+      ]
+    },
+    {
+      "name": "Blog",
+      "item": [
+        { "name": "Lấy danh sách bài viết", "request": { "method": "GET", "header": [], "url": { "raw": "/api/blogs", "host": ["{{baseUrl}}"], "path": ["api", "blogs"] } } },
+        { "name": "Lấy chi tiết bài viết", "request": { "method": "GET", "header": [], "url": { "raw": "/api/blogs/:id", "host": ["{{baseUrl}}"], "path": ["api", "blogs", ":id"] } } },
+        { "name": "Thêm bài viết", "request": { "method": "POST", "header": [], "url": { "raw": "/api/blogs", "host": ["{{baseUrl}}"], "path": ["api", "blogs"] }, "body": { "mode": "raw", "raw": "{\n  \"title\": \"\",\n  \"content\": \"\"\n}" } } },
+        { "name": "Sửa bài viết", "request": { "method": "PUT", "header": [], "url": { "raw": "/api/blogs/:id", "host": ["{{baseUrl}}"], "path": ["api", "blogs", ":id"] }, "body": { "mode": "raw", "raw": "{\n  \"title\": \"\",\n  \"content\": \"\"\n}" } } },
+        { "name": "Xóa bài viết", "request": { "method": "DELETE", "header": [], "url": { "raw": "/api/blogs/:id", "host": ["{{baseUrl}}"], "path": ["api", "blogs", ":id"] } } }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000" }
+  ]
+} 
