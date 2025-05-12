@@ -6,11 +6,38 @@ const Class = require('../models/Class');
 // @access  Public
 exports.getCoaches = async (req, res) => {
   try {
-    const coaches = await Coach.find();
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 10;
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+    const total = await Coach.countDocuments();
+
+    const coaches = await Coach.find()
+      .skip(startIndex)
+      .limit(limit);
+
+    // Pagination result
+    const pagination = {};
+
+    if (endIndex < total) {
+      pagination.next = {
+        page: page + 1,
+        limit
+      };
+    }
+
+    if (startIndex > 0) {
+      pagination.prev = {
+        page: page - 1,
+        limit
+      };
+    }
 
     res.status(200).json({
       success: true,
       count: coaches.length,
+      pagination,
+      total,
       data: coaches
     });
   } catch (error) {

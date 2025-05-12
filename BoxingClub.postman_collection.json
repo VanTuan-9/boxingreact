@@ -2,6 +2,7 @@
   "info": {
     "_postman_id": "boxing-club-collection-001",
     "name": "Boxing Club API",
+    "description": "API collection for Boxing Club with pagination",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -37,7 +38,30 @@
         { "name": "Lấy danh sách lớp", "request": { "method": "GET", "header": [], "url": { "raw": "/api/classes", "host": ["{{baseUrl}}"], "path": ["api", "classes"] } } },
         { "name": "Thêm lớp mới", "request": { "method": "POST", "header": [], "url": { "raw": "/api/classes", "host": ["{{baseUrl}}"], "path": ["api", "classes"] }, "body": { "mode": "raw", "raw": "{\n  \"name\": \"\",\n  \"description\": \"\"\n}" } } },
         { "name": "Sửa lớp", "request": { "method": "PUT", "header": [], "url": { "raw": "/api/classes/:id", "host": ["{{baseUrl}}"], "path": ["api", "classes", ":id"] }, "body": { "mode": "raw", "raw": "{\n  \"name\": \"\",\n  \"description\": \"\"\n}" } } },
-        { "name": "Xóa lớp", "request": { "method": "DELETE", "header": [], "url": { "raw": "/api/classes/:id", "host": ["{{baseUrl}}"], "path": ["api", "classes", ":id"] } } }
+        { "name": "Xóa lớp", "request": { "method": "DELETE", "header": [], "url": { "raw": "/api/classes/:id", "host": ["{{baseUrl}}"], "path": ["api", "classes", ":id"] } } },
+        {
+          "name": "Get Classes (Paginated)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/classes?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "classes"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Get paginated list of classes"
+          }
+        }
       ]
     },
     {
@@ -54,7 +78,30 @@
         { "name": "Lấy danh sách HLV", "request": { "method": "GET", "header": [], "url": { "raw": "/api/coaches", "host": ["{{baseUrl}}"], "path": ["api", "coaches"] } } },
         { "name": "Thêm HLV", "request": { "method": "POST", "header": [], "url": { "raw": "/api/coaches", "host": ["{{baseUrl}}"], "path": ["api", "coaches"] }, "body": { "mode": "raw", "raw": "{\n  \"name\": \"\",\n  \"bio\": \"\"\n}" } } },
         { "name": "Sửa HLV", "request": { "method": "PUT", "header": [], "url": { "raw": "/api/coaches/:id", "host": ["{{baseUrl}}"], "path": ["api", "coaches", ":id"] }, "body": { "mode": "raw", "raw": "{\n  \"name\": \"\",\n  \"bio\": \"\"\n}" } } },
-        { "name": "Xóa HLV", "request": { "method": "DELETE", "header": [], "url": { "raw": "/api/coaches/:id", "host": ["{{baseUrl}}"], "path": ["api", "coaches", ":id"] } } }
+        { "name": "Xóa HLV", "request": { "method": "DELETE", "header": [], "url": { "raw": "/api/coaches/:id", "host": ["{{baseUrl}}"], "path": ["api", "coaches", ":id"] } } },
+        {
+          "name": "Get Coaches (Paginated)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/coaches?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "coaches"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Get paginated list of coaches"
+          }
+        }
       ]
     },
     {
@@ -63,7 +110,30 @@
         { "name": "Lấy danh sách giải đấu", "request": { "method": "GET", "header": [], "url": { "raw": "/api/tournaments", "host": ["{{baseUrl}}"], "path": ["api", "tournaments"] } } },
         { "name": "Thêm giải đấu", "request": { "method": "POST", "header": [], "url": { "raw": "/api/tournaments", "host": ["{{baseUrl}}"], "path": ["api", "tournaments"] }, "body": { "mode": "raw", "raw": "{\n  \"name\": \"\",\n  \"description\": \"\"\n}" } } },
         { "name": "Sửa giải đấu", "request": { "method": "PUT", "header": [], "url": { "raw": "/api/tournaments/:id", "host": ["{{baseUrl}}"], "path": ["api", "tournaments", ":id"] }, "body": { "mode": "raw", "raw": "{\n  \"name\": \"\",\n  \"description\": \"\"\n}" } } },
-        { "name": "Xóa giải đấu", "request": { "method": "DELETE", "header": [], "url": { "raw": "/api/tournaments/:id", "host": ["{{baseUrl}}"], "path": ["api", "tournaments", ":id"] } } }
+        { "name": "Xóa giải đấu", "request": { "method": "DELETE", "header": [], "url": { "raw": "/api/tournaments/:id", "host": ["{{baseUrl}}"], "path": ["api", "tournaments", ":id"] } } },
+        {
+          "name": "Get Tournaments (Paginated)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/tournaments?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "tournaments"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Get paginated list of tournaments"
+          }
+        }
       ]
     },
     {
@@ -78,7 +148,36 @@
       "name": "Notifications (Admin)",
       "item": [
         { "name": "Lấy danh sách thông báo", "request": { "method": "GET", "header": [], "url": { "raw": "/api/admin/notifications", "host": ["{{baseUrl}}"], "path": ["api", "admin", "notifications"] } } },
-        { "name": "Xóa tất cả thông báo", "request": { "method": "POST", "header": [], "url": { "raw": "/api/admin/notifications/clear", "host": ["{{baseUrl}}"], "path": ["api", "admin", "notifications", "clear"] } } }
+        { "name": "Xóa tất cả thông báo", "request": { "method": "POST", "header": [], "url": { "raw": "/api/admin/notifications/clear", "host": ["{{baseUrl}}"], "path": ["api", "admin", "notifications", "clear"] } } },
+        {
+          "name": "Get Notifications (Paginated)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/notifications?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "notifications"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Get paginated list of notifications (Admin only)"
+          }
+        }
       ]
     },
     {
@@ -93,6 +192,7 @@
     }
   ],
   "variable": [
-    { "key": "baseUrl", "value": "http://localhost:5000" }
+    { "key": "baseUrl", "value": "http://localhost:5000" },
+    { "key": "token", "value": "your_jwt_token_here" }
   ]
 } 

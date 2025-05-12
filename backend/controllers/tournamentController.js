@@ -27,12 +27,40 @@ exports.getAdminTournaments = async (req, res) => {
 // @access  Public
 exports.getTournaments = async (req, res) => {
   try {
-    const tournaments = await Tournament.find().select('-participants');
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 10;
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+    const total = await Tournament.countDocuments();
+
+    const tournaments = await Tournament.find()
+      .select('-participants')
+      .skip(startIndex)
+      .limit(limit);
+
+    // Pagination result
+    const pagination = {};
+
+    if (endIndex < total) {
+      pagination.next = {
+        page: page + 1,
+        limit
+      };
+    }
+
+    if (startIndex > 0) {
+      pagination.prev = {
+        page: page - 1,
+        limit
+      };
+    }
 
     res.status(200).json({
       success: true,
       count: tournaments.length,
-      tournaments: tournaments
+      pagination,
+      total,
+      tournaments
     });
   } catch (error) {
     res.status(500).json({
