@@ -31,9 +31,23 @@ exports.getTournaments = async (req, res) => {
     const limit = parseInt(req.query.limit, 10) || 10;
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
-    const total = await Tournament.countDocuments();
+    
+    // Xử lý tìm kiếm nếu có search param
+    let searchQuery = {};
+    if (req.query.search) {
+      searchQuery = {
+        $or: [
+          { name: { $regex: req.query.search, $options: 'i' } },
+          { description: { $regex: req.query.search, $options: 'i' } },
+          { location: { $regex: req.query.search, $options: 'i' } },
+          { categories: { $regex: req.query.search, $options: 'i' } }
+        ]
+      };
+    }
+    
+    const total = await Tournament.countDocuments(searchQuery);
 
-    const tournaments = await Tournament.find()
+    const tournaments = await Tournament.find(searchQuery)
       .select('-participants')
       .skip(startIndex)
       .limit(limit);

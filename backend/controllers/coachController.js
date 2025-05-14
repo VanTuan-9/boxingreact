@@ -10,9 +10,22 @@ exports.getCoaches = async (req, res) => {
     const limit = parseInt(req.query.limit, 10) || 10;
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
-    const total = await Coach.countDocuments();
+    
+    // Xử lý tìm kiếm nếu có search param
+    let searchQuery = {};
+    if (req.query.search) {
+      searchQuery = {
+        $or: [
+          { name: { $regex: req.query.search, $options: 'i' } },
+          { specialization: { $regex: req.query.search, $options: 'i' } },
+          { bio: { $regex: req.query.search, $options: 'i' } }
+        ]
+      };
+    }
+    
+    const total = await Coach.countDocuments(searchQuery);
 
-    const coaches = await Coach.find()
+    const coaches = await Coach.find(searchQuery)
       .skip(startIndex)
       .limit(limit);
 

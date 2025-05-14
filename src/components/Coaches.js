@@ -8,29 +8,49 @@ function Coaches() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [totalItems, setTotalItems] = useState(0);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchQuery, setSearchQuery] = useState(''); // Lưu trữ từ khóa tìm kiếm thực tế
+  const [searching, setSearching] = useState(false);
   const limit = 3;
 
   useEffect(() => {
     const fetchCoaches = async () => {
       try {
-        const response = await axios.get(`/api/coaches?page=${currentPage}&limit=${limit}`);
+        setLoading(true);
+        let url = `/api/coaches?page=${currentPage}&limit=${limit}`;
+        
+        // Thêm từ khóa tìm kiếm vào URL nếu có
+        if (searchQuery.trim()) {
+          url += `&search=${searchQuery.trim()}`;
+        }
+        
+        const response = await axios.get(url);
         setCoaches(response.data.data);
         setTotalItems(response.data.total);
         setTotalPages(Math.ceil(response.data.total / limit));
-        setLoading(false);
       } catch (error) {
         console.error('Error fetching coaches:', error);
         setError('Failed to load coaches. Please try again later.');
+      } finally {
         setLoading(false);
+        setSearching(false);
       }
     };
 
     fetchCoaches();
-  }, [currentPage]);
+  }, [currentPage, searchQuery]);
 
   const handlePageChange = (page) => setCurrentPage(page);
 
-  if (loading) {
+  const handleSearch = (e) => {
+    e.preventDefault();
+    setSearching(true);
+    setSearchQuery(searchTerm); // Cập nhật từ khóa tìm kiếm thực tế
+    // Reset về trang 1 khi tìm kiếm
+    setCurrentPage(1);
+  };
+
+  if (loading && !searching) {
     return <div className="loading">Loading coaches...</div>;
   }
 
@@ -41,8 +61,25 @@ function Coaches() {
   return (
     <div className="coaches-container">
       <h2>Our Coaches</h2>
+      
+      {/* Search Box */}
+      <div className="search-container">
+        <form onSubmit={handleSearch}>
+          <input
+            type="text"
+            placeholder="Tìm theo tên, chuyên môn, tiểu sử..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="search-input"
+          />
+          <button type="submit" className="search-button">
+            {searching ? 'Đang tìm...' : 'Tìm kiếm'}
+          </button>
+        </form>
+      </div>
+      
       {coaches.length === 0 ? (
-        <p>No coaches available at the moment.</p>
+        <p className="no-results">No coaches available at the moment.</p>
       ) : (
         <div className="coaches-grid">
           {coaches.map(coach => (

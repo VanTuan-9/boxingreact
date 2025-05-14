@@ -21,12 +21,23 @@ function Tournaments() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [totalItems, setTotalItems] = useState(0);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchQuery, setSearchQuery] = useState(''); // Lưu trữ từ khóa tìm kiếm thực tế
+  const [searching, setSearching] = useState(false);
   const limit = 2;
 
   useEffect(() => {
     const fetchTournaments = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/tournaments?page=${currentPage}&limit=${limit}`);
+        setLoading(true);
+        let url = `http://localhost:5000/api/tournaments?page=${currentPage}&limit=${limit}`;
+        
+        // Thêm từ khóa tìm kiếm vào URL nếu có
+        if (searchQuery.trim()) {
+          url += `&search=${searchQuery.trim()}`;
+        }
+        
+        const res = await axios.get(url);
         setTournaments(res.data.tournaments);
         setTotalItems(res.data.total);
         setTotalPages(Math.ceil(res.data.total / limit));
@@ -34,10 +45,11 @@ function Tournaments() {
         setError('Không thể tải danh sách giải đấu.');
       } finally {
         setLoading(false);
+        setSearching(false);
       }
     };
     fetchTournaments();
-  }, [currentPage]);
+  }, [currentPage, searchQuery]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -64,7 +76,7 @@ function Tournaments() {
     }
   ];
 
-  const displayTournaments = tournaments.length > 0 ? tournaments : mockTournaments;
+  const displayTournaments = tournaments.length > 0 ? tournaments : [];
 
   const handleTournamentSelect = (tournament) => {
     setSelectedTournament(tournament);
@@ -121,26 +133,58 @@ function Tournaments() {
 
   const handlePageChange = (page) => setCurrentPage(page);
 
-  if (loading) return <div>Loading tournament list...</div>;
+  const handleSearch = (e) => {
+    e.preventDefault();
+    setSearching(true);
+    setSearchQuery(searchTerm); // Cập nhật từ khóa tìm kiếm thực tế
+    // Reset về trang 1 khi tìm kiếm
+    setCurrentPage(1);
+  };
+
+  if (loading && !searching) return <div>Loading tournament list...</div>;
   if (error) return <div className="error-message">{error}</div>;
 
   return (
     <div className="tournaments-container">
       <h2>Upcoming Tournaments</h2>
-      <div className="tournaments-grid">
-        {displayTournaments.map((tournament, idx) => (
-          <div key={tournament._id || tournament.id || idx} className="tournament-card" onClick={() => handleTournamentSelect(tournament)}>
-            <h3>{tournament.name}</h3>
-            <div className="tournament-details">
-              <p><strong>Date:</strong> {tournament.date ? (new Date(tournament.date).toLocaleDateString() || tournament.date) : tournament.date}</p>
-              {tournament.categories && <p><strong>Categories:</strong> {tournament.categories}</p>}
-              <p><strong>Location:</strong> {tournament.location}</p>
-              {tournament.registrationDeadline && <p><strong>Registration Deadline:</strong> {tournament.registrationDeadline ? (new Date(tournament.registrationDeadline).toLocaleDateString() || tournament.registrationDeadline) : tournament.registrationDeadline}</p>}
-            </div>
-            <button className="register-button">Register Now</button>
-          </div>
-        ))}
+      
+      {/* Search Box */}
+      <div className="search-container">
+        <form onSubmit={handleSearch}>
+          <input
+            type="text"
+            placeholder="Tìm theo tên, địa điểm, mô tả, phân loại..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="search-input"
+          />
+          <button type="submit" className="search-button">
+            {searching ? 'Đang tìm...' : 'Tìm kiếm'}
+          </button>
+        </form>
       </div>
+      
+      <div className="tournaments-grid">
+        {tournaments.length > 0 ? (
+          tournaments.map((tournament, idx) => (
+            <div key={tournament._id || idx} className="tournament-card" onClick={() => handleTournamentSelect(tournament)}>
+              <h3>{tournament.name}</h3>
+              <div className="tournament-details">
+                <p><strong>Date:</strong> {tournament.date ? (new Date(tournament.date).toLocaleDateString() || tournament.date) : tournament.date}</p>
+                {tournament.categories && <p><strong>Categories:</strong> {tournament.categories}</p>}
+                <p><strong>Location:</strong> {tournament.location}</p>
+                {tournament.registrationDeadline && <p><strong>Registration Deadline:</strong> {tournament.registrationDeadline ? (new Date(tournament.registrationDeadline).toLocaleDateString() || tournament.registrationDeadline) : tournament.registrationDeadline}</p>}
+              </div>
+              <button className="register-button">Register Now</button>
+            </div>
+          ))
+        ) : (
+          <div className="no-results">
+            <p>No tournaments found. Please try another search term.</p>
+          </div>
+        )}
+      </div>
+      
       {/* Phân trang */}
       {totalPages > 1 && (
         <div className="pagination">

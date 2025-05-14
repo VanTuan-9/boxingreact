@@ -33,9 +33,23 @@ exports.getClasses = async (req, res) => {
     const limit = parseInt(req.query.limit, 10) || 10;
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
-    const total = await Class.countDocuments();
+    
+    // Xử lý tìm kiếm nếu có search param
+    let searchQuery = {};
+    if (req.query.search) {
+      searchQuery = {
+        $or: [
+          { name: { $regex: req.query.search, $options: 'i' } },
+          { description: { $regex: req.query.search, $options: 'i' } },
+          { coachName: { $regex: req.query.search, $options: 'i' } },
+          { schedule: { $regex: req.query.search, $options: 'i' } }
+        ]
+      };
+    }
+    
+    const total = await Class.countDocuments(searchQuery);
 
-    const classes = await Class.find()
+    const classes = await Class.find(searchQuery)
       .populate('currentMembers', 'name email')
       .skip(startIndex)
       .limit(limit);

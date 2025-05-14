@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import '../styles/Classes.css';
@@ -12,6 +12,9 @@ const Classes = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [totalItems, setTotalItems] = useState(0);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchQuery, setSearchQuery] = useState(''); // Lưu trữ từ khóa tìm kiếm thực tế
+  const [searching, setSearching] = useState(false);
   const limit = 3; // số item trên mỗi trang
   const [selectedClass, setSelectedClass] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -26,6 +29,7 @@ const Classes = () => {
   const [registering, setRegistering] = useState(false);
   const [coachNameModal, setCoachNameModal] = useState('');
   const prevClassIdRef = useRef(null);
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
 
   // Kiểm tra trạng thái đăng nhập
   useEffect(() => {
@@ -33,11 +37,28 @@ const Classes = () => {
     setIsLoggedIn(!!token);
   }, []);
 
-  // Fetch danh sách lớp học
+  // Debounce search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500); // 500ms sau khi ngừng gõ
+    
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  // Fetch danh sách lớp học khi trang hoặc searchQuery thay đổi
   useEffect(() => {
     const fetchClasses = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/classes?page=${currentPage}&limit=${limit}`);
+        setLoading(true);
+        let url = `http://localhost:5000/api/classes?page=${currentPage}&limit=${limit}`;
+        
+        // Thêm từ khóa tìm kiếm vào URL nếu có
+        if (searchQuery.trim()) {
+          url += `&search=${searchQuery.trim()}`;
+        }
+        
+        const res = await axios.get(url);
         console.log('API response:', res.data);
         
         if (res.data && Array.isArray(res.data.classes)) {
@@ -49,17 +70,17 @@ const Classes = () => {
           setError('Invalid data format.');
           console.error('Data is not an array:', res.data);
         }
-        
-        setLoading(false);
       } catch (err) {
         setError('Unable to load class list.');
-        setLoading(false);
         console.error('Error fetching classes:', err);
+      } finally {
+        setLoading(false);
+        setSearching(false);
       }
     };
 
     fetchClasses();
-  }, [currentPage]);
+  }, [currentPage, searchQuery]);
 
   const handleClassSelect = async (cls) => {
     setSelectedClass(cls);
@@ -143,7 +164,16 @@ const Classes = () => {
     setCurrentPage(page);
   };
 
-  if (loading) return <div className="loading">Loading class list...</div>;
+  // Handle search
+  const handleSearch = (e) => {
+    e.preventDefault();
+    setSearching(true);
+    setSearchQuery(searchTerm); // Cập nhật từ khóa tìm kiếm thực tế
+    // Reset về trang 1 khi tìm kiếm
+    setCurrentPage(1);
+  };
+
+  if (loading && !searching) return <div className="loading">Loading class list...</div>;
   if (error) return <div className="error-message">{error}</div>;
 
   // Mock data khi chưa có dữ liệu thật
@@ -193,6 +223,22 @@ const Classes = () => {
         <p>Discover classes designed for all levels</p>
       </div>
 
+      {/* Search Box */}
+      <div className="search-container">
+        <form onSubmit={handleSearch}>
+          <input
+            type="text"
+            placeholder="Tìm theo tên, huấn luyện viên, mô tả, lịch học..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="search-input"
+          />
+          <button type="submit" className="search-button">
+            {searching ? 'Đang tìm...' : 'Tìm kiếm'}
+          </button>
+        </form>
+      </div>
+
       <div className="classes-grid">
         {displayClasses.map((cls) => (
           <div key={cls._id || cls.id} className="class-card" onClick={() => handleClassSelect(cls)}>
@@ -213,6 +259,13 @@ const Classes = () => {
           </div>
         ))}
       </div>
+
+      {/* No Results Message */}
+      {!loading && classes.length === 0 && (
+        <div className="no-results">
+          <p>No classes found. Please try another search term.</p>
+        </div>
+      )}
 
       {/* Phân trang */}
       {totalPages > 1 && (

@@ -40,13 +40,13 @@ const Login = () => {
         localStorage.setItem('token', response.data.user.token);
         localStorage.setItem('userRole', response.data.user.role);
         toast.success('Login successful!');
-        
+        window.location.reload();
         // Redirect based on role
-        if (response.data.user.role === 'admin') {
-          navigate('/admin/dashboard');
-        } else {
-          navigate('/dashboard');
-        }
+        // if (response.data.user.role === 'admin') {
+        //   navigate('/admin/dashboard');
+        // } else {
+        //   navigate('/dashboard');
+        // }
       }
     } catch (error) {
       const errorMessage = 
