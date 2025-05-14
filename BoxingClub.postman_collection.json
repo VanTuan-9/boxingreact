@@ -29,7 +29,36 @@
         { "name": "Lấy danh sách user", "request": { "method": "GET", "header": [], "url": { "raw": "/api/admin/users", "host": ["{{baseUrl}}"], "path": ["api", "admin", "users"] } } },
         { "name": "Thêm user mới", "request": { "method": "POST", "header": [], "url": { "raw": "/api/admin/users", "host": ["{{baseUrl}}"], "path": ["api", "admin", "users"] }, "body": { "mode": "raw", "raw": "{\n  \"name\": \"\",\n  \"email\": \"\",\n  \"password\": \"\"\n}" } } },
         { "name": "Sửa user", "request": { "method": "PUT", "header": [], "url": { "raw": "/api/admin/users/:id", "host": ["{{baseUrl}}"], "path": ["api", "admin", "users", ":id"] }, "body": { "mode": "raw", "raw": "{\n  \"name\": \"\",\n  \"email\": \"\",\n  \"password\": \"\"\n}" } } },
-        { "name": "Xóa user", "request": { "method": "DELETE", "header": [], "url": { "raw": "/api/admin/users/:id", "host": ["{{baseUrl}}"], "path": ["api", "admin", "users", ":id"] } } }
+        { "name": "Xóa user", "request": { "method": "DELETE", "header": [], "url": { "raw": "/api/admin/users/:id", "host": ["{{baseUrl}}"], "path": ["api", "admin", "users", ":id"] } } },
+        {
+          "name": "Get Users (Paginated)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/users?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "users"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Get paginated list of users (Admin only)"
+          }
+        }
       ]
     },
     {

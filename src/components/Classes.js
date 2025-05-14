@@ -9,6 +9,10 @@ const Classes = () => {
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalItems, setTotalItems] = useState(0);
+  const limit = 3; // số item trên mỗi trang
   const [selectedClass, setSelectedClass] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showRegistrationForm, setShowRegistrationForm] = useState(false);
@@ -33,20 +37,14 @@ const Classes = () => {
   useEffect(() => {
     const fetchClasses = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/classes');
-        console.log('API response:', res.data); // Debug log
+        const res = await axios.get(`http://localhost:5000/api/classes?page=${currentPage}&limit=${limit}`);
+        console.log('API response:', res.data);
         
-        // Kiểm tra cấu trúc dữ liệu và đảm bảo chỉ gán mảng vào state
-        if (Array.isArray(res.data)) {
-          setClasses(res.data);
-        } else if (res.data && Array.isArray(res.data.classes)) {
-          // Backend controller trả về dạng { success: true, count: X, classes: [...] }
+        if (res.data && Array.isArray(res.data.classes)) {
           setClasses(res.data.classes);
-        } else if (res.data && Array.isArray(res.data.data)) {
-          // Trường hợp API trả về dạng { data: [...] }
-          setClasses(res.data.data);
+          setTotalItems(res.data.total);
+          setTotalPages(Math.ceil(res.data.total / limit));
         } else {
-          // Nếu không phải mảng, gán mảng rỗng và hiển thị lỗi
           setClasses([]);
           setError('Invalid data format.');
           console.error('Data is not an array:', res.data);
@@ -61,16 +59,14 @@ const Classes = () => {
     };
 
     fetchClasses();
-  }, []);
+  }, [currentPage]);
 
   const handleClassSelect = async (cls) => {
     setSelectedClass(cls);
     setShowRegistrationForm(false);
-    // Nếu có coachName thì dùng luôn, nếu không thì fetch
     if (cls.coachName) {
       setCoachNameModal(cls.coachName);
     } else if (cls.coach) {
-      // Tránh gọi lại nếu đã fetch cho class này
       if (prevClassIdRef.current !== cls._id) {
         try {
           const res = await axiosInstance.get(`/api/coaches/${cls.coach}`);
@@ -143,6 +139,10 @@ const Classes = () => {
     }
   };
 
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
   if (loading) return <div className="loading">Loading class list...</div>;
   if (error) return <div className="error-message">{error}</div>;
 
@@ -197,11 +197,16 @@ const Classes = () => {
         {displayClasses.map((cls) => (
           <div key={cls._id || cls.id} className="class-card" onClick={() => handleClassSelect(cls)}>
             <div className="class-image">
-              <img src={cls.image ? (cls.image.startsWith('http') ? cls.image : `http://localhost:5000/uploads/${cls.image}`) : 'https://via.placeholder.com/300x200?text=Boxing+Class'} alt={cls.name} />
+              <img 
+                src={cls.image ? 
+                  (cls.image.startsWith('http') ? cls.image : `http://localhost:5000/uploads/${cls.image}`) 
+                  : 'https://via.placeholder.com/300x200?text=Boxing+Class'} 
+                alt={cls.name} 
+              />
             </div>
             <div className="class-info">
               <h3>{cls.name}</h3>
-              <p className="instructor">Coach: {coachNameModal}</p>
+              <p className="instructor">Coach: {cls.coachName || coachNameModal}</p>
               <p className="schedule">{cls.schedule || 'Contact for schedule'}</p>
               <button className="details-btn">View details</button>
             </div>
@@ -209,12 +214,43 @@ const Classes = () => {
         ))}
       </div>
 
+      {/* Phân trang */}
+      {totalPages > 1 && (
+        <div className="pagination">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="pagination-btn"
+          >
+            Trước
+          </button>
+          
+          {[...Array(totalPages)].map((_, index) => (
+            <button
+              key={index + 1}
+              onClick={() => handlePageChange(index + 1)}
+              className={`pagination-btn ${currentPage === index + 1 ? 'active' : ''}`}
+            >
+              {index + 1}
+            </button>
+          ))}
+          
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="pagination-btn"
+          >
+            Sau
+          </button>
+        </div>
+      )}
+
+      {/* Modal chi tiết lớp học */}
       {selectedClass && (
         <div className="class-details-modal">
           <div className="modal-content">
             <span className="close-button" onClick={closeDetails}>&times;</span>
             
-            {/* Hiển thị chi tiết lớp học khi chưa hiện form đăng ký */}
             {!showRegistrationForm && (
               <>
                 <h2>{selectedClass.name}</h2>
@@ -243,7 +279,7 @@ const Classes = () => {
               </>
             )}
 
-            {/* Form đăng ký lớp học */}
+            {/* Form đăng ký */}
             {showRegistrationForm && isLoggedIn && (
               <div className="registration-form">
                 <h2>Register for class: {selectedClass.name}</h2>
@@ -286,17 +322,19 @@ const Classes = () => {
                     />
                   </div>
                   
-                  <label htmlFor="experience">Experience</label>
-                  <select 
-                    id="experience" 
-                    name="experience" 
-                    value={registrationData.experience} 
-                    onChange={handleRegistrationChange}
-                  >
-                    <option value="beginner">Beginner</option>
-                    <option value="intermediate">Intermediate</option>
-                    <option value="advanced">Advanced</option>
-                  </select>
+                  <div className="form-group">
+                    <label htmlFor="experience">Experience</label>
+                    <select 
+                      id="experience" 
+                      name="experience" 
+                      value={registrationData.experience} 
+                      onChange={handleRegistrationChange}
+                    >
+                      <option value="beginner">Beginner</option>
+                      <option value="intermediate">Intermediate</option>
+                      <option value="advanced">Advanced</option>
+                    </select>
+                  </div>
                   
                   <div className="form-group">
                     <label htmlFor="additionalInfo">Additional Info (optional)</label>

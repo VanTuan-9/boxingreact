@@ -33,7 +33,7 @@ exports.getAdminNotifications = async (req, res) => {
         limit
       };
     }
-
+    
     res.status(200).json({
       success: true,
       count: notifications.length,

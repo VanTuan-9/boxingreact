@@ -18,20 +18,18 @@ function Tournaments() {
     note: ''
   });
   const [registering, setRegistering] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalItems, setTotalItems] = useState(0);
+  const limit = 2;
 
   useEffect(() => {
     const fetchTournaments = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/tournaments');
-        if (Array.isArray(res.data)) {
-          setTournaments(res.data);
-        } else if (res.data && Array.isArray(res.data.tournaments)) {
-          setTournaments(res.data.tournaments);
-        } else if (res.data && Array.isArray(res.data.data)) {
-          setTournaments(res.data.data);
-        } else {
-          setTournaments([]);
-        }
+        const res = await axios.get(`http://localhost:5000/api/tournaments?page=${currentPage}&limit=${limit}`);
+        setTournaments(res.data.tournaments);
+        setTotalItems(res.data.total);
+        setTotalPages(Math.ceil(res.data.total / limit));
       } catch (err) {
         setError('Không thể tải danh sách giải đấu.');
       } finally {
@@ -39,7 +37,7 @@ function Tournaments() {
       }
     };
     fetchTournaments();
-  }, []);
+  }, [currentPage]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -121,6 +119,8 @@ function Tournaments() {
     }
   };
 
+  const handlePageChange = (page) => setCurrentPage(page);
+
   if (loading) return <div>Loading tournament list...</div>;
   if (error) return <div className="error-message">{error}</div>;
 
@@ -141,7 +141,16 @@ function Tournaments() {
           </div>
         ))}
       </div>
-
+      {/* Phân trang */}
+      {totalPages > 1 && (
+        <div className="pagination">
+          <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} className="pagination-btn">Trước</button>
+          {[...Array(totalPages)].map((_, idx) => (
+            <button key={idx+1} onClick={() => handlePageChange(idx+1)} className={`pagination-btn ${currentPage === idx+1 ? 'active' : ''}`}>{idx+1}</button>
+          ))}
+          <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} className="pagination-btn">Sau</button>
+        </div>
+      )}
       {/* Modal đăng ký giải đấu */}
       {selectedTournament && (
         <div className="class-details-modal">
@@ -202,7 +211,7 @@ function Tournaments() {
                     />
                   </div>
                   <div className="form-group">
-                    <label htmlFor="note">Thông tin thêm (nếu có)</label>
+                    <label htmlFor="note">Ghi chú (tuỳ chọn)</label>
                     <textarea
                       id="note"
                       name="note"
@@ -212,20 +221,8 @@ function Tournaments() {
                     ></textarea>
                   </div>
                   <div className="form-actions">
-                    <button
-                      type="button"
-                      className="cancel-btn"
-                      onClick={() => setShowRegistrationForm(false)}
-                    >
-                      Quay lại
-                    </button>
-                    <button
-                      type="submit"
-                      className="submit-btn"
-                      disabled={registering}
-                    >
-                      {registering ? 'Đang đăng ký...' : 'Gửi đăng ký'}
-                    </button>
+                    <button type="button" className="cancel-btn" onClick={closeDetails}>Back</button>
+                    <button type="submit" className="submit-btn" disabled={registering}>{registering ? 'Registering...' : 'Submit'}</button>
                   </div>
                 </form>
               </div>

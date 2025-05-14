@@ -5,12 +5,18 @@ function Coaches() {
   const [coaches, setCoaches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalItems, setTotalItems] = useState(0);
+  const limit = 3;
 
   useEffect(() => {
     const fetchCoaches = async () => {
       try {
-        const response = await axios.get('/api/coaches');
+        const response = await axios.get(`/api/coaches?page=${currentPage}&limit=${limit}`);
         setCoaches(response.data.data);
+        setTotalItems(response.data.total);
+        setTotalPages(Math.ceil(response.data.total / limit));
         setLoading(false);
       } catch (error) {
         console.error('Error fetching coaches:', error);
@@ -20,7 +26,9 @@ function Coaches() {
     };
 
     fetchCoaches();
-  }, []);
+  }, [currentPage]);
+
+  const handlePageChange = (page) => setCurrentPage(page);
 
   if (loading) {
     return <div className="loading">Loading coaches...</div>;
@@ -63,6 +71,16 @@ function Coaches() {
               )}
             </div>
           ))}
+        </div>
+      )}
+      {/* Phân trang */}
+      {totalPages > 1 && (
+        <div className="pagination">
+          <button onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} className="pagination-btn">Trước</button>
+          {[...Array(totalPages)].map((_, idx) => (
+            <button key={idx+1} onClick={() => handlePageChange(idx+1)} className={`pagination-btn ${currentPage === idx+1 ? 'active' : ''}`}>{idx+1}</button>
+          ))}
+          <button onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} className="pagination-btn">Sau</button>
         </div>
       )}
     </div>
