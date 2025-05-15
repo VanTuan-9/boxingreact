@@ -38,7 +38,7 @@ function Tournaments() {
         }
         
         const res = await axios.get(url);
-        setTournaments(res.data.tournaments);
+          setTournaments(res.data.tournaments);
         setTotalItems(res.data.total);
         setTotalPages(Math.ceil(res.data.total / limit));
       } catch (err) {
@@ -168,15 +168,15 @@ function Tournaments() {
         {tournaments.length > 0 ? (
           tournaments.map((tournament, idx) => (
             <div key={tournament._id || idx} className="tournament-card" onClick={() => handleTournamentSelect(tournament)}>
-              <h3>{tournament.name}</h3>
-              <div className="tournament-details">
-                <p><strong>Date:</strong> {tournament.date ? (new Date(tournament.date).toLocaleDateString() || tournament.date) : tournament.date}</p>
-                {tournament.categories && <p><strong>Categories:</strong> {tournament.categories}</p>}
-                <p><strong>Location:</strong> {tournament.location}</p>
-                {tournament.registrationDeadline && <p><strong>Registration Deadline:</strong> {tournament.registrationDeadline ? (new Date(tournament.registrationDeadline).toLocaleDateString() || tournament.registrationDeadline) : tournament.registrationDeadline}</p>}
-              </div>
-              <button className="register-button">Register Now</button>
+            <h3>{tournament.name}</h3>
+            <div className="tournament-details">
+              <p><strong>Date:</strong> {tournament.date ? (new Date(tournament.date).toLocaleDateString() || tournament.date) : tournament.date}</p>
+              {tournament.categories && <p><strong>Categories:</strong> {tournament.categories}</p>}
+              <p><strong>Location:</strong> {tournament.location}</p>
+              {tournament.registrationDeadline && <p><strong>Registration Deadline:</strong> {tournament.registrationDeadline ? (new Date(tournament.registrationDeadline).toLocaleDateString() || tournament.registrationDeadline) : tournament.registrationDeadline}</p>}
             </div>
+            <button className="register-button">Register Now</button>
+          </div>
           ))
         ) : (
           <div className="no-results">
@@ -184,7 +184,7 @@ function Tournaments() {
           </div>
         )}
       </div>
-      
+
       {/* Phân trang */}
       {totalPages > 1 && (
         <div className="pagination">

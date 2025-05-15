@@ -1,0 +1,295 @@
+/* Admin Classes CSS */
+.admin-classes {
+  padding: 20px;
+}
+
+.admin-classes-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.admin-classes-header h2 {
+  font-size: 24px;
+  margin: 0;
+}
+
+.search-section {
+  flex-grow: 1;
+  max-width: 500px;
+}
+
+.search-section form {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.search-field {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #fff;
+  font-size: 14px;
+  min-width: 120px;
+}
+
+.search-input-container {
+  position: relative;
+  flex-grow: 1;
+  display: flex;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid #ddd;
+}
+
+.search-input {
+  flex-grow: 1;
+  padding: 8px 12px;
+  border: none;
+  outline: none;
+  font-size: 14px;
+}
+
+.search-btn {
+  background-color: #3182ce;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.search-btn:hover {
+  background-color: #2c5282;
+}
+
+.add-btn {
+  background-color: #38a169;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.add-btn:hover {
+  background-color: #2f855a;
+}
+
+/* Table Styles */
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  background-color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.admin-table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+}
+
+.admin-table tr:hover {
+  background-color: #f5f5f5;
+}
+
+/* Button Styles */
+.edit-btn,
+.delete-btn,
+.members-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  margin-right: 5px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background-color 0.3s;
+}
+
+.edit-btn {
+  background-color: #3182ce;
+  color: white;
+}
+
+.edit-btn:hover {
+  background-color: #2c5282;
+}
+
+.members-btn {
+  background-color: #805ad5;
+  color: white;
+}
+
+.members-btn:hover {
+  background-color: #6b46c1;
+}
+
+.delete-btn {
+  background-color: #e53e3e;
+  color: white;
+}
+
+.delete-btn:hover {
+  background-color: #c53030;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  gap: 5px;
+}
+
+.pagination-btn {
+  padding: 6px 12px;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background-color: #f5f5f5;
+}
+
+.pagination-btn.active {
+  background-color: #3182ce;
+  color: white;
+  border-color: #3182ce;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-content h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.form-group textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.update-btn,
+.cancel-btn,
+.close-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 10px;
+  font-weight: 500;
+}
+
+.update-btn {
+  background-color: #3182ce;
+  color: white;
+}
+
+.update-btn:hover {
+  background-color: #2c5282;
+}
+
+.cancel-btn {
+  background-color: #e2e8f0;
+  color: #4a5568;
+}
+
+.cancel-btn:hover {
+  background-color: #cbd5e0;
+}
+
+.close-btn {
+  background-color: #e2e8f0;
+  color: #4a5568;
+  margin-top: 15px;
+}
+
+.close-btn:hover {
+  background-color: #cbd5e0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .admin-classes-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .search-section {
+    width: 100%;
+    max-width: none;
+  }
+
+  .search-section form {
+    flex-direction: column;
+  }
+
+  .search-field {
+    width: 100%;
+  }
+} 

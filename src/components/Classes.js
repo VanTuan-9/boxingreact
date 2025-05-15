@@ -376,17 +376,17 @@ const Classes = () => {
                   </div>
                   
                   <div className="form-group">
-                    <label htmlFor="experience">Experience</label>
-                    <select 
-                      id="experience" 
-                      name="experience" 
-                      value={registrationData.experience} 
-                      onChange={handleRegistrationChange}
-                    >
-                      <option value="beginner">Beginner</option>
-                      <option value="intermediate">Intermediate</option>
-                      <option value="advanced">Advanced</option>
-                    </select>
+                  <label htmlFor="experience">Experience</label>
+                  <select 
+                    id="experience" 
+                    name="experience" 
+                    value={registrationData.experience} 
+                    onChange={handleRegistrationChange}
+                  >
+                    <option value="beginner">Beginner</option>
+                    <option value="intermediate">Intermediate</option>
+                    <option value="advanced">Advanced</option>
+                  </select>
                   </div>
                   
                   <div className="form-group">

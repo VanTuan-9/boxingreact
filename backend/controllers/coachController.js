@@ -13,14 +13,8 @@ exports.getCoaches = async (req, res) => {
     
     // Xử lý tìm kiếm nếu có search param
     let searchQuery = {};
-    if (req.query.search) {
-      searchQuery = {
-        $or: [
-          { name: { $regex: req.query.search, $options: 'i' } },
-          { specialization: { $regex: req.query.search, $options: 'i' } },
-          { bio: { $regex: req.query.search, $options: 'i' } }
-        ]
-      };
+    if (req.query.search && req.query.field) {
+      searchQuery[req.query.field] = { $regex: req.query.search, $options: 'i' };
     }
     
     const total = await Coach.countDocuments(searchQuery);
@@ -51,6 +45,7 @@ exports.getCoaches = async (req, res) => {
       count: coaches.length,
       pagination,
       total,
+      totalPages: Math.ceil(total / limit),
       data: coaches
     });
   } catch (error) {

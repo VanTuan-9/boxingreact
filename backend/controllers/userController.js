@@ -5,11 +5,47 @@ const User = require('../models/User');
 // @access  Private/Admin
 exports.getUsers = async (req, res) => {
   try {
-    const users = await User.find().select('-password');
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 10;
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+    
+    // Xử lý tìm kiếm nếu có search param
+    let searchQuery = {};
+    if (req.query.search && req.query.field) {
+      searchQuery[req.query.field] = { $regex: req.query.search, $options: 'i' };
+    }
+    
+    const total = await User.countDocuments(searchQuery);
+
+    const users = await User.find(searchQuery)
+      .select('-password')
+      .skip(startIndex)
+      .limit(limit);
+
+    // Pagination result
+    const pagination = {};
+
+    if (endIndex < total) {
+      pagination.next = {
+        page: page + 1,
+        limit
+      };
+    }
+
+    if (startIndex > 0) {
+      pagination.prev = {
+        page: page - 1,
+        limit
+      };
+    }
 
     res.status(200).json({
       success: true,
       count: users.length,
+      pagination,
+      total,
+      totalPages: Math.ceil(total / limit),
       users: users
     });
   } catch (error) {

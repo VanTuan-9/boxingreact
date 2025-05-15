@@ -8,11 +8,47 @@ const ClassRegistration = require('../models/ClassRegistration');
 // @access  Private/Admin
 exports.getAdminClasses = async (req, res) => {
   try {
-    const classes = await Class.find().populate('currentMembers', 'name email');
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 10;
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+    
+    // Xử lý tìm kiếm nếu có search param
+    let searchQuery = {};
+    if (req.query.search && req.query.field) {
+      searchQuery[req.query.field] = { $regex: req.query.search, $options: 'i' };
+    }
+    
+    const total = await Class.countDocuments(searchQuery);
+
+    const classes = await Class.find(searchQuery)
+      .populate('currentMembers', 'name email')
+      .skip(startIndex)
+      .limit(limit);
+
+    // Pagination result
+    const pagination = {};
+
+    if (endIndex < total) {
+      pagination.next = {
+        page: page + 1,
+        limit
+      };
+    }
+
+    if (startIndex > 0) {
+      pagination.prev = {
+        page: page - 1,
+        limit
+      };
+    }
 
     res.status(200).json({
       success: true,
       count: classes.length,
+      pagination,
+      total,
+      totalPages: Math.ceil(total / limit),
       classes: classes
     });
   } catch (error) {

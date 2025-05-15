@@ -16,22 +16,38 @@ function AdminTournaments() {
     registrationDeadline: '',
     description: '',
     rules: [''],
-    prizes: [{ position: 1, prize: '' }]
+    prizes: [{ position: 1, prize: '' }],
+    status: 'upcoming'
   });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchField, setSearchField] = useState('name');
 
   useEffect(() => {
     fetchTournaments();
-  }, []);
+  }, [currentPage, searchTerm, searchField]);
 
   const fetchTournaments = async () => {
     try {
-      const response = await axios.get('/api/tournaments/admin/list');
+      const response = await axios.get(`/api/tournaments/admin/list?page=${currentPage}&search=${searchTerm}&field=${searchField}`);
       setTournaments(response.data.tournaments);
+      setTotalPages(response.data.totalPages);
       setLoading(false);
     } catch (error) {
       toast.error('Error fetching tournaments');
       setLoading(false);
     }
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    setCurrentPage(1);
+    fetchTournaments();
+  };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
   };
 
   const handleEdit = (tournament) => {
@@ -44,7 +60,8 @@ function AdminTournaments() {
       registrationDeadline: new Date(tournament.registrationDeadline).toISOString().split('T')[0],
       description: tournament.description,
       rules: tournament.rules,
-      prizes: tournament.prizes
+      prizes: tournament.prizes,
+      status: tournament.status
     });
     setShowEditModal(true);
   };
@@ -124,8 +141,33 @@ function AdminTournaments() {
 
   return (
     <div className="admin-tournaments">
-      <h2>Manage Tournaments</h2>
-      <button className="add-btn" onClick={() => setShowAddModal(true)}>Add New Tournament</button>
+      <div className="admin-tournaments-header">
+        <h2>Manage Tournaments</h2>
+        <div className="search-section">
+          <form onSubmit={handleSearch}>
+            <select 
+              value={searchField} 
+              onChange={(e) => setSearchField(e.target.value)}
+              className="search-field"
+            >
+              <option value="name">Tên giải đấu</option>
+              <option value="location">Địa điểm</option>
+              <option value="status">Trạng thái</option>
+            </select>
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Tìm kiếm..."
+              className="search-input"
+            />
+            <button type="submit" className="search-btn">
+              <i className="fas fa-search"></i> Tìm
+            </button>
+          </form>
+        </div>
+        <button className="add-btn" onClick={() => setShowAddModal(true)}>Add New Tournament</button>
+      </div>
       
       <table className="admin-table">
         <thead>
@@ -155,7 +197,36 @@ function AdminTournaments() {
         </tbody>
       </table>
 
-      {/* Add Tournament Modal */}
+      {totalPages > 1 && (
+        <div className="pagination">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="pagination-btn"
+          >
+            Trước
+          </button>
+          
+          {[...Array(totalPages)].map((_, index) => (
+            <button
+              key={index + 1}
+              onClick={() => handlePageChange(index + 1)}
+              className={`pagination-btn ${currentPage === index + 1 ? 'active' : ''}`}
+            >
+              {index + 1}
+            </button>
+          ))}
+          
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="pagination-btn"
+          >
+            Sau
+          </button>
+        </div>
+      )}
+
       {showAddModal && (
         <div className="modal-overlay">
           <div className="modal-content">
@@ -225,7 +296,6 @@ function AdminTournaments() {
         </div>
       )}
 
-      {/* Edit Tournament Modal */}
       {showEditModal && (
         <div className="modal-overlay">
           <div className="modal-content">

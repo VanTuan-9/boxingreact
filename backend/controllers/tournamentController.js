@@ -6,11 +6,47 @@ const User = require('../models/User');
 // @access  Private/Admin
 exports.getAdminTournaments = async (req, res) => {
   try {
-    const tournaments = await Tournament.find().populate('participants', 'name email');
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 10;
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+    
+    // Xử lý tìm kiếm nếu có search param
+    let searchQuery = {};
+    if (req.query.search && req.query.field) {
+      searchQuery[req.query.field] = { $regex: req.query.search, $options: 'i' };
+    }
+    
+    const total = await Tournament.countDocuments(searchQuery);
+
+    const tournaments = await Tournament.find(searchQuery)
+      .populate('participants', 'name email')
+      .skip(startIndex)
+      .limit(limit);
+
+    // Pagination result
+    const pagination = {};
+
+    if (endIndex < total) {
+      pagination.next = {
+        page: page + 1,
+        limit
+      };
+    }
+
+    if (startIndex > 0) {
+      pagination.prev = {
+        page: page - 1,
+        limit
+      };
+    }
 
     res.status(200).json({
       success: true,
       count: tournaments.length,
+      pagination,
+      total,
+      totalPages: Math.ceil(total / limit),
       tournaments: tournaments
     });
   } catch (error) {

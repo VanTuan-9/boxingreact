@@ -13,20 +13,35 @@ function AdminUsers() {
     role: 'member',
     status: 'active'
   });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchField, setSearchField] = useState('name');
 
   useEffect(() => {
     fetchUsers();
-  }, []);
+  }, [currentPage, searchTerm, searchField]);
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get('/api/members/admin/list');
+      const response = await axios.get(`/api/members/admin/list?page=${currentPage}&search=${searchTerm}&field=${searchField}`);
       setUsers(response.data.users);
+      setTotalPages(response.data.totalPages);
       setLoading(false);
     } catch (error) {
       toast.error('Error fetching users');
       setLoading(false);
     }
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    setCurrentPage(1);
+    fetchUsers();
+  };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
   };
 
   const handleEdit = (user) => {
@@ -79,6 +94,30 @@ function AdminUsers() {
     <div className="admin-users">
       <div className="admin-users-header">
         <h3>Manage Users</h3>
+        <div className="search-section">
+          <form onSubmit={handleSearch}>
+            <select 
+              value={searchField} 
+              onChange={(e) => setSearchField(e.target.value)}
+              className="search-field"
+            >
+              <option value="name">Tên</option>
+              <option value="email">Email</option>
+              <option value="role">Vai trò</option>
+              <option value="status">Trạng thái</option>
+            </select>
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Tìm kiếm..."
+              className="search-input"
+            />
+            <button type="submit" className="search-btn">
+              <i className="fas fa-search"></i> Tìm
+            </button>
+          </form>
+        </div>
       </div>
       <table className="admin-table">
         <thead>
@@ -112,7 +151,36 @@ function AdminUsers() {
         </tbody>
       </table>
 
-      {/* Edit User Modal */}
+      {totalPages > 1 && (
+        <div className="pagination">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="pagination-btn"
+          >
+            Trước
+          </button>
+          
+          {[...Array(totalPages)].map((_, index) => (
+            <button
+              key={index + 1}
+              onClick={() => handlePageChange(index + 1)}
+              className={`pagination-btn ${currentPage === index + 1 ? 'active' : ''}`}
+            >
+              {index + 1}
+            </button>
+          ))}
+          
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="pagination-btn"
+          >
+            Sau
+          </button>
+        </div>
+      )}
+
       {showEditModal && (
         <div className="modal-overlay">
           <div className="modal-content">

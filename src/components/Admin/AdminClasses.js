@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from '../../config/axios';
 import { toast } from 'react-toastify';
+import '../../styles/AdminClasses.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
 function AdminClasses() {
   const [classes, setClasses] = useState([]);
@@ -21,16 +24,21 @@ function AdminClasses() {
   });
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchField, setSearchField] = useState('name');
 
   useEffect(() => {
     fetchClasses();
     fetchCoaches();
-  }, []);
+  }, [currentPage, searchTerm, searchField]);
 
   const fetchClasses = async () => {
     try {
-      const response = await axios.get('/api/classes/admin/list');
+      const response = await axios.get(`/api/classes/admin/list?page=${currentPage}&search=${searchTerm}&field=${searchField}`);
       setClasses(response.data.classes);
+      setTotalPages(response.data.totalPages);
       setLoading(false);
     } catch (error) {
       toast.error('Error fetching classes');
@@ -142,14 +150,51 @@ function AdminClasses() {
     }
   };
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+    setCurrentPage(1);
+    fetchClasses();
+  };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
 
   return (
     <div className="admin-classes">
-      <h2>Manage Classes</h2>
-      <button className="add-btn" onClick={() => setShowAddModal(true)}>Add New Class</button>
+      <div className="admin-classes-header">
+        <h2>Manage Classes</h2>
+        <div className="search-section">
+          <form onSubmit={handleSearch}>
+            <select 
+              value={searchField} 
+              onChange={(e) => setSearchField(e.target.value)}
+              className="search-field"
+            >
+              <option value="name">Tên lớp</option>
+              <option value="coach">Huấn luyện viên</option>
+              <option value="schedule">Lịch học</option>
+            </select>
+            <div className="search-input-container">
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Tìm kiếm..."
+                className="search-input"
+              />
+              <button type="submit" className="search-btn">
+                <FontAwesomeIcon icon={faSearch} />
+              </button>
+            </div>
+          </form>
+        </div>
+        <button className="add-btn" onClick={() => setShowAddModal(true)}>Add New Class</button>
+      </div>
       
       <table className="admin-table">
         <thead>
@@ -182,6 +227,37 @@ function AdminClasses() {
           ))}
         </tbody>
       </table>
+
+      {/* Phân trang */}
+      {totalPages > 1 && (
+        <div className="pagination">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="pagination-btn"
+          >
+            Trước
+          </button>
+          
+          {[...Array(totalPages)].map((_, index) => (
+            <button
+              key={index + 1}
+              onClick={() => handlePageChange(index + 1)}
+              className={`pagination-btn ${currentPage === index + 1 ? 'active' : ''}`}
+            >
+              {index + 1}
+            </button>
+          ))}
+          
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="pagination-btn"
+          >
+            Sau
+          </button>
+        </div>
+      )}
 
       {/* Add Class Modal */}
       {showAddModal && (

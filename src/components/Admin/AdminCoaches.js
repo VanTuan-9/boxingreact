@@ -33,19 +33,43 @@ function AdminCoaches() {
   const [newAchievement, setNewAchievement] = useState('');
   const [newCertification, setNewCertification] = useState('');
 
+  // Thêm state cho phân trang và tìm kiếm
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchField, setSearchField] = useState('name'); // name, specialization, status
+
   useEffect(() => {
     fetchCoaches();
-  }, []);
+  }, [currentPage, searchTerm, searchField]);
 
   const fetchCoaches = async () => {
     try {
-      const response = await axios.get('/api/coaches');
-      setCoaches(response.data.data);
+      const response = await axios.get('/api/coaches', {
+        params: {
+          page: currentPage,
+          search: searchTerm,
+          field: searchField
+        }
+      });
+      setCoaches(response.data.coaches || response.data.data);
+      setTotalPages(response.data.totalPages || 1);
       setLoading(false);
     } catch (error) {
+      console.error('Error fetching coaches:', error);
       toast.error('Error fetching coaches');
       setLoading(false);
     }
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    setCurrentPage(1);
+    fetchCoaches();
+  };
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
   };
 
   const handleEdit = (coach) => {
@@ -241,9 +265,34 @@ function AdminCoaches() {
 
   return (
     <div className="admin-coaches">
-      <h2>Manage Coaches</h2>
-      <button className="add-btn" onClick={() => setShowAddModal(true)}>Add New Coach</button>
-      
+      <div className="admin-coaches-header">
+        <h2>Manage Coaches</h2>
+        <div className="search-section">
+          <form onSubmit={handleSearch}>
+            <select 
+              value={searchField} 
+              onChange={(e) => setSearchField(e.target.value)}
+              className="search-field"
+            >
+              <option value="name">Tên</option>
+              <option value="specialization">Chuyên môn</option>
+              <option value="status">Trạng thái</option>
+            </select>
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Tìm kiếm..."
+              className="search-input"
+            />
+            <button type="submit" className="search-btn">
+              <i className="fas fa-search"></i> Tìm
+            </button>
+          </form>
+        </div>
+        <button className="add-btn" onClick={() => setShowAddModal(true)}>Add New Coach</button>
+      </div>
+
       <table className="admin-table">
         <thead>
           <tr>
@@ -272,6 +321,37 @@ function AdminCoaches() {
           ))}
         </tbody>
       </table>
+
+      {/* Phân trang */}
+      {totalPages > 1 && (
+        <div className="pagination">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="pagination-btn"
+          >
+            Trước
+          </button>
+          
+          {[...Array(totalPages)].map((_, index) => (
+            <button
+              key={index + 1}
+              onClick={() => handlePageChange(index + 1)}
+              className={`pagination-btn ${currentPage === index + 1 ? 'active' : ''}`}
+            >
+              {index + 1}
+            </button>
+          ))}
+          
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="pagination-btn"
+          >
+            Sau
+          </button>
+        </div>
+      )}
 
       {/* Add Coach Modal */}
       {showAddModal && (
