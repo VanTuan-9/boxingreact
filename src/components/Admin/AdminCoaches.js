@@ -48,6 +48,7 @@ function AdminCoaches() {
       const response = await axios.get('/api/coaches', {
         params: {
           page: currentPage,
+          limit: 2,
           search: searchTerm,
           field: searchField
         }

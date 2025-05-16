@@ -1,22 +1,41 @@
 import React, { useState, useEffect } from 'react';
 import axios from '../../config/axios';
 import { toast } from 'react-toastify';
+import './AdminStyles.css';
 
 function AdminClassRegistrations() {
   const [registrations, setRegistrations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedReg, setSelectedReg] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
+  
+  // State cho phân trang
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [limit, setLimit] = useState(10);
+  
+  // State cho tìm kiếm
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchField, setSearchField] = useState('name');
+  const [statusFilter, setStatusFilter] = useState('');
 
   useEffect(() => {
     fetchRegistrations();
-  }, []);
+  }, [currentPage, limit, searchTerm, statusFilter]);
 
   const fetchRegistrations = async () => {
     setLoading(true);
     try {
-      const res = await axios.get('/api/class-registrations');
+      const res = await axios.get('/api/class-registrations', {
+        params: {
+          page: currentPage,
+          limit: limit,
+          search: searchTerm,
+          status: statusFilter
+        }
+      });
       setRegistrations(res.data.data);
+      setTotalPages(res.data.totalPages || 1);
     } catch (err) {
       toast.error('Failed to load registration list');
     }
@@ -42,12 +61,49 @@ function AdminClassRegistrations() {
       toast.error('Reject failed!');
     }
   };
+  
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+  
+  const handleSearch = (e) => {
+    e.preventDefault();
+    setCurrentPage(1);
+    fetchRegistrations();
+  };
 
   if (loading) return <div>Loading...</div>;
 
   return (
     <div className="admin-classes">
       <h2>Manage Class Registrations</h2>
+      
+      {/* Thêm phần tìm kiếm - với CSS */}
+      <div className="search-filter-container">
+        <form onSubmit={handleSearch} className="search-form">
+          <select 
+            value={statusFilter} 
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="filter-select"
+          >
+            <option value="">All Status</option>
+            <option value="pending">Pending</option>
+            <option value="accepted">Accepted</option>
+            <option value="rejected">Rejected</option>
+          </select>
+          
+          <input
+            type="text"
+            placeholder="Search by name..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="search-input"
+          />
+          
+          <button type="submit" className="search-btn">Search</button>
+        </form>
+      </div>
+      
       <table className="admin-table">
         <thead>
           <tr>
@@ -90,6 +146,37 @@ function AdminClassRegistrations() {
           ))}
         </tbody>
       </table>
+      
+      {/* Phân trang - với CSS */}
+      {totalPages > 1 && (
+        <div className="pagination">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="pagination-btn"
+          >
+            Trước
+          </button>
+          
+          {[...Array(totalPages)].map((_, index) => (
+            <button
+              key={index + 1}
+              onClick={() => handlePageChange(index + 1)}
+              className={`pagination-btn ${currentPage === index + 1 ? 'active' : ''}`}
+            >
+              {index + 1}
+            </button>
+          ))}
+          
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="pagination-btn"
+          >
+            Sau
+          </button>
+        </div>
+      )}
 
       {/* Modal chi tiết đăng ký */}
       {showDetailModal && selectedReg && (

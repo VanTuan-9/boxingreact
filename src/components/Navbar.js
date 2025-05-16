@@ -15,7 +15,7 @@ const Navbar = ({ isLoggedIn, isAdmin, onLogout }) => {
         <li><Link to="/coaches">Coaches</Link></li>
         <li><Link to="/classes">Classes</Link></li>
         <li><Link to="/tournaments">Tournaments</Link></li>
-        {isAdmin && <li><Link to="/blog">Blog</Link></li>}
+        {/* {isAdmin && <li><Link to="/blog">Blog</Link></li>} */}
       </ul>
       <div className="auth-buttons">
         {isLoggedIn ? (

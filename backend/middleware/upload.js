@@ -17,6 +17,7 @@ const storage = multer.diskStorage({
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
     let prefix = 'coach-';
     if (req.uploadType === 'class') prefix = 'class-';
+    if (req.uploadType === 'tournament') prefix = 'tournament-';
     cb(null, prefix + uniqueSuffix + path.extname(file.originalname));
   }
 });

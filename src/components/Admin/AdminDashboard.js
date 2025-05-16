@@ -88,6 +88,10 @@ function AdminDashboard({ user, onLogout }) {
             <i className="fas fa-trophy"></i>
             Tournaments
           </Link>
+          {/* <Link to="/admin/blog" className="nav-link">
+            <i className="fas fa-blog"></i>
+            Blog
+          </Link> */}
           {/* <Link to="/admin/reports" className="nav-link">
             <i className="fas fa-chart-bar"></i>
             Reports

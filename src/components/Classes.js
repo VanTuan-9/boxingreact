@@ -15,7 +15,7 @@ const Classes = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchQuery, setSearchQuery] = useState(''); // Lưu trữ từ khóa tìm kiếm thực tế
   const [searching, setSearching] = useState(false);
-  const limit = 3; // số item trên mỗi trang
+  const limit = 1; // số item trên mỗi trang
   const [selectedClass, setSelectedClass] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showRegistrationForm, setShowRegistrationForm] = useState(false);

@@ -52,10 +52,36 @@ exports.getRegistrations = async (req, res) => {
   try {
     const filter = {};
     if (req.query.class) filter.class = req.query.class;
+    if (req.query.status) filter.status = req.query.status;
+    
+    // Phân trang
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 10;
+    const skip = (page - 1) * limit;
+    
+    // Xử lý tìm kiếm nếu có
+    if (req.query.search) {
+      filter.name = { $regex: req.query.search, $options: 'i' };
+    }
+    
+    // Đếm tổng số bản ghi
+    const total = await ClassRegistration.countDocuments(filter);
+    
+    // Lấy dữ liệu theo phân trang
     const registrations = await ClassRegistration.find(filter)
       .populate('class', 'name')
-      .populate('user', 'name email');
-    res.status(200).json({ success: true, data: registrations });
+      .populate('user', 'name email')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+    
+    res.status(200).json({ 
+      success: true, 
+      data: registrations,
+      totalItems: total,
+      totalPages: Math.ceil(total / limit),
+      currentPage: page
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

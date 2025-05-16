@@ -153,6 +153,11 @@ exports.getTournament = async (req, res) => {
 // @access  Private/Admin
 exports.createTournament = async (req, res) => {
   try {
+    // Xử lý file upload
+    if (req.file) {
+      req.body.image = req.file.filename;
+    }
+    
     const tournament = await Tournament.create(req.body);
 
     res.status(201).json({
@@ -173,6 +178,11 @@ exports.createTournament = async (req, res) => {
 // @access  Private/Admin
 exports.updateTournament = async (req, res) => {
   try {
+    // Xử lý file upload
+    if (req.file) {
+      req.body.image = req.file.filename;
+    }
+    
     const tournament = await Tournament.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true

@@ -26,6 +26,10 @@ const TournamentSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Please add a description']
   },
+  image: {
+    type: String,
+    default: 'no-image.jpg'
+  },
   rules: {
     type: [String],
     required: [true, 'Please add rules']
